@@ -1,0 +1,164 @@
+﻿@{
+    Layout = null;
+
+
+    var datas = ViewBag.Historical as Dictionary<DateTime, RateData>;
+
+    var degerler = ViewBag.MyJson as IEnumerable<KeyValuePair<DateTime,RateData>>;
+
+}
+
+<style>
+    #myChart {
+        width: 400px;
+        height: 200px;
+    }
+</style>
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<div class="container ">
+
+    <div class="row">
+
+        <div class="col-3">
+    <div class="card" style="width: 18rem;">
+        <img src="https://image.hurimg.com/i/hurriyet/75/750x422/5612e114f018fb0c800a8898.jpg" class="card-img-top" alt="..." width="286px" height="180px">
+        <div class="card-body">
+                    <h5 class="card-title">Güncel Dolar Verisi</h5>
+            
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">@(Convert.ToDecimal(ViewBag.dolar).ToString("N2"))</li>         
+        </ul>
+
+            </div>
+    </div>
+
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <img src="https://edirnesonhaber.com/wp-content/uploads/2021/10/news_img-20211011-010448.jpg" class="card-img-top" alt="..." width="286px" height="180px">
+                <div class="card-body">
+                    <h5 class="card-title">Güncel Avro Verisi</h5>
+                  
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">@(Convert.ToDecimal(ViewBag.euro).ToString("N2"))</li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <img src="https://sm.mashable.com/t/mashable_tr/photo/default/pound-sterlin-isareti_d495.1248.jpg" class="card-img-top" alt="..." width="286px" height="180px">
+                <div class="card-body">
+                    <h5 class="card-title">Güncel Sterlin Verisi</h5>
+                
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">@(Convert.ToDecimal(ViewBag.sterlin).ToString("N2"))</li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <img src="https://api.dokay.com.tr/storage/1476/63280f8b1e3bc7.40466361.jpg" class="card-img-top" alt="..." width="286px" height="180px">
+                <div class="card-body">
+                    <h5 class="card-title">Güncel İzmir Hava Durumu</h5>
+                    
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">@(Convert.ToDecimal(ViewBag.v).ToString("N2"))</li>
+                </ul>
+
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+
+
+
+<section id="historical">
+    <div class="container">
+    <table class="table table-dark table-striped">
+        <tr>
+            <th>Tarih</th>
+            <th>Kur</th>
+        </tr>
+
+
+        @foreach (var item in datas)
+        {
+            <tr>
+                
+                <td>@item.Key.ToShortDateString()</td>
+                <td>@item.Value.TRY.ToString("F2")</td>
+
+            </tr>
+        }
+
+    </table>
+    </div>
+        @* var labelsData = @degerler.FirstOrDefault().Key; *@
+        <input type="hidden" id="degerlerValues" value="@ViewBag.MyJson" />
+        @* var dataDeger = @degerler.FirstOrDefault().Value.TRY; *@
+</section>
+
+<div class="container" style="padding:30px">
+    <canvas id="myChart" ></canvas>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+       
+        const degerler=document.getElementById("degerlerValues");
+        
+        console.log("degerler string", degerler.value);
+
+        let values = JSON.parse(degerler.value); 
+      
+    console.log("degerler obje", values);   
+
+        let keyDizisi = [];
+        let valueDizisi = [];
+
+    valueDizisi.push(values[0].Value.TRY);
+    valueDizisi.push(values[1].Value.TRY);
+    valueDizisi.push(values[2].Value.TRY);
+
+        console.log("value dizisi", valueDizisi);
+        keyDizisi.push(values[0].Key);
+        keyDizisi.push(values[1].Key);
+        keyDizisi.push(values[2].Key);
+        console.log("key dizisi", keyDizisi);
+
+
+    const ctx = document.getElementById('myChart');
+    var barColors = ["red", "green", "blue"];
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: keyDizisi,
+            backgroundColor: barColors,
+            datasets: [{
+                label: 'Kurun Maksimum olduğu 3 Gün',
+                data: valueDizisi,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+        
+    </script>
